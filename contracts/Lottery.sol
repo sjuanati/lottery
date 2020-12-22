@@ -45,6 +45,16 @@ contract Lottery {
         }
     }
 
+    // Allow admin to cancel an ongoing bet
+    function cancel() external inState(State.BETTING) onlyAdmin() {
+        for (uint i = 0; i < players.length; i++) {
+            // reimburse players
+            players[i].transfer(betSize);
+        }
+        delete players;
+        currentState = State.IDLE;
+    }
+
     // modulo is upper band for the random number
     function _randomModulo(uint256 modulo) internal view returns (uint) {
         // keccak256 accepts only 1 parameter, so we encode inputs, and keccak256 returns bytes32
