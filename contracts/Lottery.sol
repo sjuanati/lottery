@@ -30,6 +30,28 @@ contract Lottery {
         currentState = State.BETTING;
     }
 
+    function bet() external payable inState(State.BETTING) {
+        require(msg.value == betSize, "can only bet exactly the bet size");
+        players.push(msg.sender);
+        if (players.length == betCount) {
+            // 1. Pick a winner
+            uint winner = _randomModulo(betCount);
+            // 2. Send the money to the winner
+            players[winner].transfer((betSize * betCount) * (100 - houseFee) / 100);
+            // 3. Change state to IDLE
+            currentState = State.IDLE;
+            // 4. Data cleanup
+            delete players;
+        }
+    }
+
+    // modulo is upper band for the random number
+    function _randomModulo(uint256 modulo) internal view returns (uint) {
+        // keccak256 accepts only 1 parameter, so we encode inputs, and keccak256 returns bytes32
+        return uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % modulo;
+        
+    }
+
     modifier inState(State state) {
         require(currentState == state, "current state does not allow this");
         _;
