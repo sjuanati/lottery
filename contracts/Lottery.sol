@@ -55,7 +55,7 @@ contract Lottery {
         currentState = State.IDLE;
     }
 
-    // modulo is upper band for the random number
+    // modulo is upper band for the random number (not safe, use Oracles instead)
     function _randomModulo(uint256 modulo) internal view returns (uint) {
         // keccak256 accepts only 1 parameter, so we encode inputs, and keccak256 returns bytes32
         return uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % modulo;
