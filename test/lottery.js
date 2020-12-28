@@ -15,7 +15,7 @@ contract('Lottery', (accounts) => {
     });
 
     it('Should NOT create bet if not admin', async () => {
-        expectRevert(
+        await expectRevert(
             lottery.createBet(2, 5, { from: accounts[2] }),
             'only admin'
         )
@@ -24,7 +24,7 @@ contract('Lottery', (accounts) => {
 
     it('Should NOT create bet if state not idle', async () => {
         await lottery.createBet(5, 5, { from: accounts[0] });
-        expectRevert(
+        await expectRevert(
             lottery.createBet(5, 5, { from: accounts[0] }),
             'current state does not allow this'
         );
@@ -41,7 +41,7 @@ contract('Lottery', (accounts) => {
     });
 
     it('Should NOT bet if not in state BETTING', async () => {
-        expectRevert(
+        await expectRevert(
             lottery.bet(),
             'current state does not allow this'
         );
@@ -49,11 +49,11 @@ contract('Lottery', (accounts) => {
 
     it('Should NOT bet if not sending exact bet amount', async () => {
         await lottery.createBet(2, 50);
-        expectRevert(
+        await expectRevert(
             lottery.bet({ value: 40 }),
             'can only bet exactly the bet size'
         );
-        expectRevert(
+        await expectRevert(
             lottery.bet({ value: 60 }),
             'can only bet exactly the bet size'
         );
@@ -80,7 +80,7 @@ contract('Lottery', (accounts) => {
     });
 
     it('Should NOT cancel if not betting', async () => {
-        expectRevert(
+        await expectRevert(
             lottery.cancel(),
             'current state does not allow this'
         );
@@ -88,7 +88,7 @@ contract('Lottery', (accounts) => {
 
       it('Should NOT cancel if not admin', async () => {
         await lottery.createBet(3, 100);
-        expectRevert(
+        await expectRevert(
             lottery.cancel({from: accounts[2]}),
             'only admin'
         );
